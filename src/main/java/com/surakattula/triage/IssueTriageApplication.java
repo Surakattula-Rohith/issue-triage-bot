@@ -22,6 +22,7 @@ public class IssueTriageApplication {
     @Bean
     CommandLineRunner printFirstPages(GitHubClient gitHub) {
         return args -> {
+            System.out.println("GitHub requests left: " + gitHub.requestsLeft());
             List<GitHubIssue> issues = new ArrayList<>();
 
             for (int page = 1; page <= 3; page++) {
@@ -41,6 +42,7 @@ public class IssueTriageApplication {
             issues.stream()
                     .limit(5)
                     .forEach(issue -> System.out.println("#" + issue.number() + " " + issue.title()));
+            System.out.println("GitHub requests left: " + gitHub.requestsLeft());
         };
     }
 }
