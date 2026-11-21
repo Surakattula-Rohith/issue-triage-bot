@@ -15,7 +15,16 @@ public record GitHubIssue(
         String state,
         List<Label> labels,
         @JsonProperty("created_at") Instant createdAt,
-        @JsonProperty("html_url") String htmlUrl) {
+        @JsonProperty("html_url") String htmlUrl,
+        @JsonProperty("pull_request") Object pullRequest) {
+
+    /**
+     * GitHub's issues endpoint also returns pull requests.
+     * Only pull requests carry a "pull_request" field.
+     */
+    public boolean isPullRequest() {
+        return pullRequest != null;
+    }
 
     public record Label(String name) {
     }
