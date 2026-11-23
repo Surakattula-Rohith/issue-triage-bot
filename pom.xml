@@ -27,6 +27,17 @@
             <artifactId>spring-boot-starter-restclient</artifactId>
         </dependency>
 
+        <!-- Database: Spring's JDBC support (JdbcClient) and the PostgreSQL driver -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- Testing: JUnit 5, AssertJ, and Spring's fake HTTP server -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -2,6 +2,7 @@ package com.surakattula.triage;
 
 import com.surakattula.triage.github.GitHubClient;
 import com.surakattula.triage.github.GitHubIssue;
+import com.surakattula.triage.storage.IssueRepository;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.boot.CommandLineRunner;
@@ -17,10 +18,10 @@ public class IssueTriageApplication {
     }
 
     /**
-     * Fetch the newest 3 pages of Spring Boot issues and keep only real issues.
+     * Fetch the newest 3 pages of Spring Boot issues, keep only real issues, and save them.
      */
     @Bean
-    CommandLineRunner printFirstPages(GitHubClient gitHub) {
+    CommandLineRunner saveFirstPages(GitHubClient gitHub, IssueRepository repository) {
         return args -> {
             System.out.println("GitHub requests left: " + gitHub.requestsLeft());
             List<GitHubIssue> issues = new ArrayList<>();
@@ -38,10 +39,8 @@ public class IssueTriageApplication {
                 issues.addAll(pageIssues);
             }
 
-            System.out.println("Total issues: " + issues.size());
-            issues.stream()
-                    .limit(5)
-                    .forEach(issue -> System.out.println("#" + issue.number() + " " + issue.title()));
+            issues.forEach(repository::save);
+            System.out.println("Saved " + issues.size() + " issues. Issues in the database: " + repository.count());
             System.out.println("GitHub requests left: " + gitHub.requestsLeft());
         };
     }
