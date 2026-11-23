@@ -15,12 +15,12 @@ public class GitHubClient {
     private final RestClient restClient;
 
     /**
-     * @param token a GitHub personal access token, or empty to call GitHub without one
-     *              (60 requests per hour without a token, 5,000 with one)
+     * @param builder in the app, Spring's pre-configured builder; in tests, one wired to a fake GitHub
+     * @param token   a GitHub personal access token, or empty to call GitHub without one
+     *                (60 requests per hour without a token, 5,000 with one)
      */
-    public GitHubClient(@Value("${GITHUB_TOKEN:}") String token) {
-        RestClient.Builder builder = RestClient.builder()
-                .baseUrl("https://api.github.com")
+    public GitHubClient(RestClient.Builder builder, @Value("${GITHUB_TOKEN:}") String token) {
+        builder.baseUrl("https://api.github.com")
                 .defaultHeader("Accept", "application/vnd.github+json")
                 .defaultHeader("User-Agent", "issue-triage-bot");
         if (!token.isBlank()) {
