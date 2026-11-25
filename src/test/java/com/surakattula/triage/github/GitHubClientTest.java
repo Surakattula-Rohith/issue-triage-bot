@@ -6,6 +6,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 import java.time.Instant;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestClient;
@@ -41,5 +42,26 @@ class GitHubClientTest {
         assertThat(issue.createdAt()).isEqualTo(Instant.parse("2026-11-11T15:23:34Z"));
         assertThat(issue.isPullRequest()).isFalse();
         fakeGitHub.verify();
+    }
+
+    @Test
+    void nextLinkFindsTheNextPageAddress() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.LINK,
+                "<https://api.github.com/repositories/6296790/issues?per_page=100&page=2&after=Y3Vy%3D>; rel=\"next\", "
+                        + "<https://api.github.com/repositories/6296790/issues?per_page=100&before=Y3Vy%3D>; rel=\"prev\"");
+
+        assertThat(GitHubClient.nextLink(headers)).hasToString(
+                "https://api.github.com/repositories/6296790/issues?per_page=100&page=2&after=Y3Vy%3D");
+    }
+
+    @Test
+    void nextLinkIsNullOnTheLastPage() {
+        HttpHeaders lastPage = new HttpHeaders();
+        lastPage.add(HttpHeaders.LINK,
+                "<https://api.github.com/repositories/6296790/issues?per_page=100&before=Y3Vy%3D>; rel=\"prev\"");
+
+        assertThat(GitHubClient.nextLink(lastPage)).isNull();
+        assertThat(GitHubClient.nextLink(new HttpHeaders())).isNull(); // no Link header at all
     }
 }
